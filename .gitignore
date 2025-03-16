@@ -1,0 +1,7 @@
+credentials.py
+tiktok_cookies.json
+*_secrets.*
+*.env
+__pycache__/
+*.py[cod]
+*$py.class

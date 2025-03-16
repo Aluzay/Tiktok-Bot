@@ -1,0 +1,41 @@
+from playwright.sync_api import sync_playwright
+from playwright_stealth import stealth_sync
+import time
+import random
+import json
+from utils.auth import get_credentials, login
+from utils.cookies import load_cookies
+from config import COOKIES_FILE, TIKTOK_USERNAMES, TIKTOK_LINKS, WAIT_TIME
+
+def main():
+    with sync_playwright() as p:
+        # Simulate a browser to not being detected as a bot
+        browser = p.chromium.launch(headless=False, args=["--disable-blink-features=AutomationControlled"])
+        context = browser.new_context(
+            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+            viewport={"width": 1280, "height": 720},
+            permissions=["geolocation"],
+            geolocation={"latitude": 48.8566, "longitude": 2.3522},  # (Paris)
+            locale="fr-FR"
+        )
+        page = context.new_page()
+        
+        # Try to load cookies
+        cookies_loaded = load_cookies(page)
+        print("Cookies loaded" if cookies_loaded else "No cookie found")
+        # If no cookies or expired load it again
+        if not cookies_loaded:
+            print("Connexion requise (pas de cookies)...")
+            login(page)
+            load_cookies(page)
+        
+        page.goto("https://www.tiktok.com")
+        print("Tiktok opened")
+        
+        time.sleep(WAIT_TIME)
+        
+        input("Press Enter to close browser...")
+        browser.close()
+
+if __name__ == "__main__":
+    main()
