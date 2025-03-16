@@ -29,11 +29,24 @@ def main():
             login(page)
             load_cookies(page)
         
-        page.goto("https://www.tiktok.com")
+        page.goto("https://www.tiktok.com/foryou")
         print("Tiktok opened")
         
         time.sleep(WAIT_TIME)
         
+        for username in TIKTOK_USERNAMES:
+            share_button = page.locator('[data-e2e="share-btn"]').nth(0)
+            share_button.click()
+            
+            share_message_button = page.locator('[data-e2e="share-message"]')
+            share_message_button.click()
+            
+            search_input = page.get_by_role("textbox", name="Rechercher").nth(1)
+            search_input.click()
+            search_input.fill(username)
+            
+        time.sleep(WAIT_TIME)            
+                
         input("Press Enter to close browser...")
         browser.close()
 
