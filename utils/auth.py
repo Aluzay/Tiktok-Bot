@@ -5,6 +5,7 @@ import json
 import time
 import os
 import random
+import math
 from pathlib import Path
 
 def get_credentials():
@@ -20,21 +21,23 @@ def get_credentials():
 def login(page):
     """Logs into TikTok and saves the cookies"""
     from config import COOKIES_FILE
+    from tiktok_captcha_solver import PlaywrightSolver
+    from credentials import API_KEY
     EMAIL, PASSWORD = get_credentials()
     
     # Create the data folder if it doesn't exist
     Path(os.path.dirname(COOKIES_FILE)).mkdir(parents=True, exist_ok=True)
     
     try:
-        page.goto("https://www.tiktok.com/login/phone-or-email/email")
-        
-        time.sleep(5)
+        page.goto("https://www.tiktok.com/login/phone-or-email/email", wait_until="load")
+        print("Tiktok login page opened")
+                
         username_input = page.locator("input[name='username']")
         username_input.click()
         
         for char in EMAIL:
             username_input.type(char, delay=random.uniform(50, 150))
-            
+         
         password_input = page.locator("input[type='password']")
         password_input.click()
         
@@ -43,9 +46,18 @@ def login(page):
 
         time.sleep(2)        
         page.click("button[type='submit']")
-                
-        # Wait for captcha if necessary
-        input("Press Enter to continue...")
+        
+        # Solve captcha if present
+        captcha_solver = PlaywrightSolver(
+            page,
+            API_KEY,
+            headers={"User-Agent": "Chrome"},
+            mouse_step_delay_ms=math.floor(random.uniform(10, 20)),
+            mouse_step_size=math.floor(random.uniform(10, 20)),
+        )
+        time.sleep(2)
+        captcha_solver.solve_captcha_if_present()
+        time.sleep(2)
         
         # Save the cookies
         cookies = page.context.cookies()
