@@ -1,5 +1,6 @@
 credentials.py
 tiktok_cookies.json
+config.py
 *_secrets.*
 *.env
 __pycache__/

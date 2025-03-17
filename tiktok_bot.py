@@ -5,7 +5,7 @@ import random
 import json
 from utils.auth import get_credentials, login
 from utils.cookies import load_cookies
-from config import COOKIES_FILE, TIKTOK_USERNAMES, WAIT_TIME
+from config import TIKTOK_USERNAMES
 
 def main():
     with sync_playwright() as p:
@@ -43,9 +43,14 @@ def main():
             
             search_input = page.get_by_role("textbox", name="Rechercher").nth(1)
             search_input.click()
-            search_input.fill(username)         
-                
-        input("Press Enter to close browser...")
+            search_input.fill(username)
+                        
+            checkbox_input = page.locator(".css-1is53jx-DivUserListInnerContainer > .css-1pnk7m3-DivUserItemContainer > .css-yb46t0-DivCheckboxContainer > .css-y6j4rp-LabelCheckbox > .checkbox-symbol > .css-1i148ub-InputCheckbox")
+            checkbox_input.click()   
+            
+            send_button = page.get_by_role("button", name="Envoyer").nth(1)
+            send_button.click()
+                   
         browser.close()
 
 if __name__ == "__main__":

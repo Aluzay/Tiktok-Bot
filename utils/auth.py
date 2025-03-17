@@ -63,9 +63,9 @@ def login(page):
         cookies = page.context.cookies()
         with open(COOKIES_FILE, "w") as file:
             json.dump(cookies, file)
-        print("Cookies sauvegardés avec succès")
+        print("Cookies saved")
         
         return True
     except Exception as e:
-        print(f"Erreur lors de la connexion: {e}")
+        print(f"Error while connecting: {e}")
         return False
